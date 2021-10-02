@@ -1,21 +1,19 @@
 pragma solidity ^0.8.0;
 
 contract IdentityManager {
-    event StudentCreated(address _student);
-    event StudentUpdated(address _student);
+    event UserCreated(address _user);
+    event UserUpdated(address _user);
 
-    struct Student {
-        address student;
-        bytes encryptedFirstName;
-        bytes encryptedLastName;
+    struct User {
+        address account;
         bytes encryptedData;
-        bytes studentEncryptedSymmetricKey;
+        bytes userEncryptedSymmetricKey;
         bytes institutionEncryptedSymmetricKey;
         bool institutionManaged;
     }
 
     address public owner;
-    mapping(address => Student) public students;
+    mapping(address => User) public users;
 
     constructor(){
         owner = msg.sender;
@@ -26,45 +24,33 @@ contract IdentityManager {
         _;
     }
 
-    function createStudent(
-        Student calldata _student
+    function createUser(
+        User calldata _user
     ) public ownerRestricted {
-        Student storage student = students[_student.student];
-        require(student.student == address(0x0));
-        students[_student.student] = _student;
-        emit StudentCreated(student.student);
+        User storage user = users[_user.account];
+        require(user.account == address(0x0));
+        users[_user.account] = _user;
+        emit UserCreated(user.account);
     }
 
-    function setStudentData(
-        address _student,
+    function setUserData(
+        address _user,
         bytes calldata _encryptedData
     ) public ownerRestricted {
-        Student storage student = students[_student];
-        require(student.student != address(0x0));
-        student.encryptedData = _encryptedData;
-        emit StudentUpdated(student.student);
+        User storage user = users[_user];
+        require(user.account != address(0x0));
+        user.encryptedData = _encryptedData;
+        emit UserUpdated(user.account);
     }
 
-    function setStudentName(
-        address _student,
-        bytes calldata _encryptedFirstName,
-        bytes calldata _encryptedLastName
-    ) public ownerRestricted {
-        Student storage student = students[_student];
-        require(student.student != address(0x0));
-        student.encryptedFirstName = _encryptedFirstName;
-        student.encryptedLastName = _encryptedLastName;
-        emit StudentUpdated(student.student);
-    }
-
-    function getStudent(
-        address _student
+    function getUser(
+        address _user
     ) public view returns (
-        Student memory
+        User memory
     ){
-        Student storage student = students[_student];
-        require(student.student != address(0x0));
-        return student;
+        User storage user = users[_user];
+        require(user.account != address(0x0));
+        return user;
     }
 
 }
